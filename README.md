@@ -37,6 +37,8 @@ Three EC2 instances inside a custom, segmented VPC, communicating over private I
 | Wazuh Server | Ubuntu 24.04 LTS | SIEM manager, indexer, dashboard | t3.small | 20 GB |
 | Windows Endpoint | Windows Server 2022 Base | Monitored "victim" machine | t3.medium | 30 GB |
 | Attack Machine | Ubuntu 24.04 LTS | Runs Caldera C2 + Atomic Red Team | t3.micro &rarr; t3.small (temporary) | 10 GB |
+<img width="1582" height="275" alt="Screenshot 2026-08-03 173309" src="https://github.com/user-attachments/assets/20de8972-1915-4fb0-9fbe-9c902ee59c83" />
+
  
 **Network:** Custom VPC (`SOC-Lab-VPC`, CIDR `10.0.0.0/16`) with public and private subnets across two availability zones (`us-east-1a`, `us-east-1b`). A single security group (`SOC-Lab-SG`) enforces least-privilege inbound access:
  
@@ -50,6 +52,9 @@ Three EC2 instances inside a custom, segmented VPC, communicating over private I
 | All traffic | All | `10.0.0.0/16` | Inter-VM communication (agent enrollment, Sandcat callbacks) |
  
 All three VMs share a single key pair (`soc-lab-key.pem`) for SSH access and Windows password decryption.
+<img width="1850" height="686" alt="Screenshot 2026-08-03 172941" src="https://github.com/user-attachments/assets/33e3837c-489d-4d66-bc82-8bc6ace5f836" />
+<img width="1498" height="635" alt="Screenshot 2026-08-03 173252" src="https://github.com/user-attachments/assets/46a939bb-d0a9-4767-9cd5-0d554c83b1c9" />
+
  
 ---
  
@@ -80,7 +85,8 @@ The `-i` (`--ignore-check`) flag was required because Wazuh 4.7's installer only
 Installation completed in 5&ndash;10 minutes, printing generated dashboard credentials. Accessed the dashboard at `https://<wazuh-server-public-ip>` and confirmed login.
  
 Retrieved the server's **private IP** from the EC2 console (required for agent enrollment in the next phase).
- 
+ <img width="1896" height="858" alt="Screenshot 2026-08-03 173352" src="https://github.com/user-attachments/assets/11bfd2db-05b5-439f-a047-d7714ff8aa7b" />
+
 ---
  
 ## Phase 3: Agent Deployment
@@ -98,7 +104,8 @@ sudo systemctl start wazuh-agent
 ```
  
 Confirmed both agents showed **Active** in the dashboard's Agents view.
- 
+ <img width="1908" height="736" alt="Screenshot 2026-08-03 173338" src="https://github.com/user-attachments/assets/4f793412-c5cf-4298-bacb-b79526e025c2" />
+
 ---
  
 ## Phase 4: Sysmon & Endpoint Telemetry
@@ -216,6 +223,9 @@ Each alert was classified using standard SOC triage categories:
 - **True Positive** &mdash; real (self-generated) attack activity, correctly detected
 - **False Positive** &mdash; benign activity incorrectly flagged (e.g. AWS's own `EC2Launch.exe` wallpaper script was initially mistaken for suspicious `cmd.exe` activity until the command line was inspected directly)
 - **Benign True Positive** &mdash; legitimate activity, correctly detected as noteworthy but not malicious
+  <img width="1863" height="67" alt="Screenshot 2026-08-03 172728" src="https://github.com/user-attachments/assets/4c8f014b-9873-4614-aa7d-4e398fbb1b5f" />
+  <img width="1736" height="672" alt="Screenshot 2026-08-03 174110" src="https://github.com/user-attachments/assets/bf4b85e4-f2e0-47a9-91d5-039d0e77e3ed" />
+  <img width="1858" height="737" alt="Screenshot 2026-08-03 174206" src="https://github.com/user-attachments/assets/9c1e13f1-8959-482d-9ef0-9888c31214b4" />
 ---
  
 ## Phase 8: Incident Reporting
